@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import React from "react";
 import { useData } from "@/context/dataContext";
 import {
@@ -50,16 +51,6 @@ export default function YearOnYearPage(): React.ReactElement {
       if (stored) setData(JSON.parse(stored));
     }
   }, [data, setData]);
-
-  // jika masih belum ada data
-  if (!data || (Array.isArray(data) && data.length === 0)) {
-    return (
-      <main className="min-h-screen flex flex-col items-center justify-center text-gray-600 bg-gray-50">
-        <h2 className="text-2xl font-semibold mb-2">Belum ada data yang diunggah</h2>
-        <p className="text-sm">Silakan kembali ke halaman utama untuk mengunggah file Excel.</p>
-      </main>
-    );
-  }
 
   // Konversi serial Excel → Date JS
   const excelSerialToDate = (serial: number) =>
@@ -162,8 +153,19 @@ export default function YearOnYearPage(): React.ReactElement {
   const totalLastAll = cutoffData.reduce((s, r) => s + (Number(r.RKAPNumber || 0) || 0), 0);
   const overallPct = totalLastAll > 0 ? Number(((totalActualAll / totalLastAll) * 100).toFixed(2)) : 0;
   
-  
-  
+  // jika masih belum ada data
+
+  // jika masih belum ada data
+const noData = !data || (Array.isArray(data) && data.length === 0);
+
+if (noData) {
+    return (
+      <main className="min-h-screen flex flex-col items-center justify-center text-gray-600 bg-gray-50">
+        <h2 className="text-2xl font-semibold mb-2">Belum ada data yang diunggah</h2>
+        <p className="text-sm">Silakan kembali ke halaman utama untuk mengunggah file Excel.</p>
+      </main>
+    );
+  }
 
   // Pilih 3 indikator teratas berdasarkan nominal actual (untuk ringkasan kecil)
   const topIndicators = React.useMemo(() => {
@@ -188,9 +190,9 @@ export default function YearOnYearPage(): React.ReactElement {
     const num = Number(v);
     const abs = Math.abs(num);
 
-    if (abs >= 1_000_000_000) return (num / 1_000_000_000).toFixed(2).replace(/\.00$/, "") + "M";
-    if (abs >= 1_000_000) return (num / 1_000_000).toFixed(2).replace(/\.00$/, "") + "J";
-    if (abs >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, "") + "K";
+    if (abs >= 1_000_000_000) return (num / 1_000_000_000).toFixed(2).replace(/\.00$/, "") + " Mil";
+    if (abs >= 1_000_000) return (num / 1_000_000).toFixed(2).replace(/\.00$/, "") + " Jt";
+    if (abs >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, "") + " Rb";
     return num.toLocaleString("id-ID");
   };
 
@@ -220,7 +222,11 @@ export default function YearOnYearPage(): React.ReactElement {
   const selectedYearLabel = yearFilter ? `(${yearFilter})` : "";
 
   return (
-    <main className="min-h-screen bg-slate-50 p-10">
+    <main className="min-h-screen bg-slate-50 p-10 flex flex-col items-center">
+      <div className="w-full max-w-7xl">
+        <Link href="/" className="text-blue-600 no-underline text-2xl mb-8 block self-start">
+          &larr;
+        </Link>
       {/* Header */}
       <div
         className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8
@@ -285,9 +291,8 @@ export default function YearOnYearPage(): React.ReactElement {
             <div className="mt-2 flex flex-wrap gap-2">
               <button
                 onClick={() => setYearFilter("")}
-                className={`px-3 py-1.5 rounded-xl text-sm border ${
-                  yearFilter === "" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-700 border-slate-300"
-                }`}
+                className={`px-3 py-1.5 rounded-xl text-sm border ${yearFilter === "" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-700 border-slate-300"
+                  }`}
               >
                 Semua
               </button>
@@ -296,9 +301,8 @@ export default function YearOnYearPage(): React.ReactElement {
                 <button
                   key={yr}
                   onClick={() => setYearFilter(yr)}
-                  className={`px-3 py-1.5 rounded-xl text-sm border ${
-                    yearFilter === yr ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-700 border-slate-300"
-                  }`}
+                  className={`px-3 py-1.5 rounded-xl text-sm border ${yearFilter === yr ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-700 border-slate-300"
+                    }`}
                 >
                   {yr}
                 </button>
@@ -312,18 +316,16 @@ export default function YearOnYearPage(): React.ReactElement {
             <div className="mt-2 flex gap-2">
               <button
                 onClick={() => setChartType("line")}
-                className={`px-3 py-1.5 rounded-xl text-sm border ${
-                  chartType === "line" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-700 border-slate-300"
-                }`}
+                className={`px-3 py-1.5 rounded-xl text-sm border ${chartType === "line" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-700 border-slate-300"
+                  }`}
               >
                 Line
               </button>
 
               <button
                 onClick={() => setChartType("bar")}
-                className={`px-3 py-1.5 rounded-xl text-sm border ${
-                  chartType === "bar" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-700 border-slate-300"
-                }`}
+                className={`px-3 py-1.5 rounded-xl text-sm border ${chartType === "bar" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-700 border-slate-300"
+                  }`}
               >
                 Bar
               </button>
@@ -361,17 +363,17 @@ export default function YearOnYearPage(): React.ReactElement {
           const chartData = buildChartDataForIndicator(indicator);
           if (!chartData || chartData.length === 0) return null;
           const totalActual = cutoffData
-  .filter((r) => r.Indicator === indicator && (!yearFilter || r.SortKey.startsWith(yearFilter)))
-  .reduce((s, r) => s + (r.ActualNumber || 0), 0);
+            .filter((r) => r.Indicator === indicator && (!yearFilter || r.SortKey.startsWith(yearFilter)))
+            .reduce((s, r) => s + (r.ActualNumber || 0), 0);
 
-const totalRKAP = cutoffData
-  .filter((r) => r.Indicator === indicator && (!yearFilter || r.SortKey.startsWith(yearFilter)))
-  .reduce((s, r) => s + (r.RKAPNumber || 0), 0);
+          const totalRKAP = cutoffData
+            .filter((r) => r.Indicator === indicator && (!yearFilter || r.SortKey.startsWith(yearFilter)))
+            .reduce((s, r) => s + (r.RKAPNumber || 0), 0);
 
-// Warna berdasarkan capaian
-const isBelowTarget = totalActual < totalRKAP;
-const actualColor = isBelowTarget ? "#dc2626" : "#16a34a"; // merah/hijau
-const targetColor = "#475569"; // abu-abu gelap
+          // Warna berdasarkan capaian
+          const isBelowTarget = totalActual < totalRKAP;
+          const actualColor = isBelowTarget ? "#dc2626" : "#16a34a"; // merah/hijau
+          const targetColor = "#475569"; // abu-abu gelap
 
 
           // compute growth using only months that have currentYear != null
@@ -406,26 +408,41 @@ const targetColor = "#475569"; // abu-abu gelap
 
                 {/* tambahan kecil */}
                 <div className="mt-2 text-xs text-slate-600">
-                  <div>
-                    Total Tahun Berjalan: <span className="font-semibold">{formatNumber(totalCurrent)}</span>
-                  </div>
-                  <div>
-                    Total Tahun Lalu: <span className="font-semibold">{formatNumber(totalLast)}</span>
-                  </div>
-                </div>
+  <div>
+    Total Tahun Berjalan: <span className="font-semibold">{formatNumber(totalActual)}</span>
+  </div>
+  <div>
+    Total Tahun Lalu: <span className="font-semibold">{formatNumber(totalRKAP)}</span>
+  </div>
+</div>
               </CardHeader>
-
               <CardContent>
                 <div className="w-full overflow-x-auto chart-box">
                   <div className="min-w-[640px] h-[260px] mt-4">
                     <ResponsiveContainer width="100%" height="100%">
                       {chartType === "line" ? (
-                        <LineChart data={chartData} margin={{ top: 8, right: 24, left: 0, bottom: 4 }}>
+                        <LineChart data={chartData} margin={{ top: 5, right: 24, left: 10, bottom: 20 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e6eef8" />
-                          <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#475569" }} />
+
+                          <XAxis
+                            dataKey="month"
+                            label={{
+                              value: "Periode (Bulan)",
+                              position: "bottom",
+                              offset: 0
+                            }}
+                            tick={{ fontSize: 12, fill: "#475569" }}
+                          />
+
                           <YAxis
                             width={70}
                             tickFormatter={(v) => formatNumber(v)}
+                            label={{
+                              value: "Nilai (Actual / RKAP)",
+                              angle: -90,
+                              position: "insideLeft",
+                              style: { textAnchor: "middle" }
+                            }}
                             tick={{ fill: "#475569", fontSize: 11 }}
                           />
                           <Tooltip
@@ -444,7 +461,7 @@ const targetColor = "#475569"; // abu-abu gelap
                               name === "currentYear" ? "Tahun Berjalan" : name === "lastYear" ? "Tahun Lalu" : name,
                             ]}
                           />
-                          <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: 12 }} />
+                          <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: 12 }} />
 
                           <Line
                             type="monotone"
@@ -467,14 +484,31 @@ const targetColor = "#475569"; // abu-abu gelap
                           />
                         </LineChart>
                       ) : (
-                        <BarChart data={chartData} margin={{ top: 8, right: 24, left: 0, bottom: 4 }}>
+                        <BarChart data={chartData} margin={{ top: 5, right: 24, left: 10, bottom: 35 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e6eef8" />
-                          <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#475569" }} />
+
+                          <XAxis
+                            dataKey="month"
+                            label={{
+                              value: "Periode (Bulan)",
+                              position: "bottom",
+                              offset: 20
+                            }}
+                            tick={{ fontSize: 12, fill: "#475569" }}
+                          />
+
                           <YAxis
                             width={70}
                             tickFormatter={(v) => formatNumber(v)}
+                            label={{
+                              value: "Nilai (Actual / RKAP)",
+                              angle: -90,
+                              position: "insideLeft",
+                              style: { textAnchor: "middle" }
+                            }}
                             tick={{ fill: "#475569", fontSize: 11 }}
                           />
+
                           <Tooltip
                             contentStyle={{
                               background: "rgba(255, 255, 255, 0.96)",
@@ -491,7 +525,7 @@ const targetColor = "#475569"; // abu-abu gelap
                               return [typeof value === "number" ? formatNumber(value) : value, label];
                             }}
                           />
-                          <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: 12 }} />
+                          <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: 12 }} />
 
                           <Bar dataKey="currentYear" name="Tahun Berjalan" fill={actualColor} barSize={12} />
                           <Bar dataKey="lastYear" name="Tahun Lalu" fill={targetColor} barSize={8} />
@@ -500,13 +534,13 @@ const targetColor = "#475569"; // abu-abu gelap
                     </ResponsiveContainer>
                   </div>
 
-                  {/* Axis captions — sama seperti SummaryPage */}
-                  <div className="text-center text-xs text-slate-500 mt-2">Sumbu X: Periode • Sumbu Y: Nilai</div>
+          
                 </div>
               </CardContent>
             </Card>
           );
         })}
+      </div>
       </div>
     </main>
   );

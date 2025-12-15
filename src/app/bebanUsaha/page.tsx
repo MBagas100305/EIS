@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import React from "react";
 import { useData } from "@/context/dataContext";
 import {
@@ -154,9 +155,9 @@ export default function BebanUsahaPage(): React.ReactElement {
     if (v === null || v === undefined || v === "" || isNaN(Number(v))) return "-";
     const num = Number(v);
     const abs = Math.abs(num);
-    if (abs >= 1_000_000_000) return (num / 1_000_000_000).toFixed(2).replace(/\.00$/, "") + "M";
-    if (abs >= 1_000_000) return (num / 1_000_000).toFixed(2).replace(/\.00$/, "") + "J";
-    if (abs >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, "") + "K";
+    if (abs >= 1_000_000_000) return (num / 1_000_000_000).toFixed(2).replace(/\.00$/, "") + " Mil";
+    if (abs >= 1_000_000) return (num / 1_000_000).toFixed(2).replace(/\.00$/, "") + " Jt";
+    if (abs >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, "") + " Rb";
     return num.toLocaleString("id-ID");
   };
 
@@ -179,7 +180,11 @@ export default function BebanUsahaPage(): React.ReactElement {
   const selectedYearLabel = yearFilter ? `(${yearFilter})` : "";
 
   return (
-    <main className="min-h-screen bg-slate-50 p-10">
+    <main className="min-h-screen bg-slate-50 p-10 flex flex-col items-center">
+      <div className="w-full max-w-7xl">
+        <Link href="/" className="text-blue-600 no-underline text-2xl mb-8 block self-start">
+          &larr;
+        </Link>
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8 border-l-4 border-l-blue-500 border bg-white rounded-xl p-6 shadow-sm">
         <div>
@@ -341,10 +346,31 @@ export default function BebanUsahaPage(): React.ReactElement {
                   <div className="min-w-[640px] h-[260px] mt-4">
                     <ResponsiveContainer width="100%" height="100%">
                       {chartType === "line" ? (
-                        <LineChart data={chartData} margin={{ top: 8, right: 24, left: 0, bottom: 4 }}>
+                        <LineChart data={chartData} margin={{ top: 5, right: 24, left: 10, bottom: 20 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e6eef8" />
-                          <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#475569" }} />
-                          <YAxis width={70} tickFormatter={formatNumber} tick={{ fontSize: 11, fill: "#475569" }} />
+
+                          <XAxis
+                            dataKey="month"
+                            label={{
+                              value: "Periode (Bulan)",
+                              position: "bottom",
+                              offset: 0
+                            }}
+                            tick={{ fontSize: 12, fill: "#475569" }}
+                          />
+
+                          <YAxis
+                            width={70}
+                            tickFormatter={formatNumber}
+                            label={{
+                              value: "Nilai (Actual / RKAP)",
+                              angle: -90,
+                              position: "insideLeft",
+                              style: { textAnchor: "middle" }
+                            }}
+                            tick={{ fontSize: 11, fill: "#475569" }}
+                          />
+
                           <Tooltip
                             contentStyle={{
                               background: "rgba(255, 255, 255, 0.96)",
@@ -361,7 +387,9 @@ export default function BebanUsahaPage(): React.ReactElement {
                               name === "current" ? "Realisasi" : "RKAP",
                             ]}
                           />
-                          <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: 12 }} />
+
+                          <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: 12 }} />
+
                           <Line
                             type="monotone"
                             dataKey="current"
@@ -370,15 +398,44 @@ export default function BebanUsahaPage(): React.ReactElement {
                             strokeWidth={3}
                             dot={{ r: 3 }}
                             activeDot={{ r: 5 }}
-                            connectNulls={false}
                           />
-                          <Line type="monotone" dataKey="rkap" name="RKAP" stroke="#0b60b8" strokeWidth={2} strokeDasharray="6 4" dot={{ r: 2 }} />
+
+                          <Line
+                            type="monotone"
+                            dataKey="rkap"
+                            name="RKAP"
+                            stroke="#0b60b8"
+                            strokeWidth={2}
+                            strokeDasharray="6 4"
+                            dot={{ r: 2 }}
+                          />
                         </LineChart>
                       ) : (
-                        <BarChart data={chartData} margin={{ top: 8, right: 24, left: 0, bottom: 4 }}>
+                        <BarChart data={chartData} margin={{ top: 5, right: 24, left: 10, bottom: 35 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e6eef8" />
-                          <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#475569" }} />
-                          <YAxis width={70} tickFormatter={formatNumber} tick={{ fontSize: 11, fill: "#475569" }} />
+
+                          <XAxis
+                            dataKey="month"
+                            label={{
+                              value: "Periode (Bulan)",
+                              position: "bottom",
+                              offset: 20
+                            }}
+                            tick={{ fontSize: 12, fill: "#475569" }}
+                          />
+
+                          <YAxis
+                            width={70}
+                            tickFormatter={formatNumber}
+                            label={{
+                              value: "Nilai (Actual / RKAP)",
+                              angle: -90,
+                              position: "insideLeft",
+                              style: { textAnchor: "middle" }
+                            }}
+                            tick={{ fontSize: 11, fill: "#475569" }}
+                          />
+
                           <Tooltip
                             contentStyle={{
                               background: "rgba(255, 255, 255, 0.96)",
@@ -395,21 +452,22 @@ export default function BebanUsahaPage(): React.ReactElement {
                               name === "current" ? "Realisasi" : "RKAP",
                             ]}
                           />
-                          <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: 12 }} />
-                          <Bar dataKey="current" name="Realisasi" fill={actualColor} barSize={12} />
-                          <Bar dataKey="rkap" name="RKAP" fill={targetColor} barSize={8} />
 
+                          <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: 12 }} />
+
+                          <Bar dataKey="current" name="Realisasi" fill={actualColor} barSize={12} />
                           <Bar dataKey="rkap" name="RKAP" fill="#0b60b8" barSize={8} />
                         </BarChart>
                       )}
                     </ResponsiveContainer>
                   </div>
-                  <div className="text-center text-xs text-slate-500 mt-2">Sumbu X: Periode • Sumbu Y: Nilai</div>
+
                 </div>
               </CardContent>
             </Card>
           );
         })}
+      </div>
       </div>
     </main>
   );

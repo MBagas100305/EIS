@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import React from "react";
 import { useData } from "@/context/dataContext";
 import {
@@ -50,11 +51,11 @@ export default function SummaryPage() {
 
   // Normalisasi data Excel (useMemo untuk performa)
   const typedData: DataRow[] = React.useMemo(() => {
-      if (!data) return [];              
-  if (!Array.isArray(data)) return [];   
-  if (data.length === 0) return [];      
+    if (!data) return [];
+    if (!Array.isArray(data)) return [];
+    if (data.length === 0) return [];
 
-  return data.map((d: any) => { 
+    return data.map((d: any) => {
       const clean: Record<string, any> = {};
       Object.keys(d).forEach((key) => (clean[key.trim()] = d[key]));
 
@@ -101,10 +102,10 @@ export default function SummaryPage() {
     return [...indicators]
       .map((ind) => {
         const rows = typedData.filter((r) => {
-  const matchInd = r.Indicator === ind;
-  const matchYear = !yearFilter || r.SortKey?.startsWith(yearFilter);
-  return matchInd && matchYear;
-});
+          const matchInd = r.Indicator === ind;
+          const matchYear = !yearFilter || r.SortKey?.startsWith(yearFilter);
+          return matchInd && matchYear;
+        });
         const total = rows.reduce((s, r) => s + (r.ActualNumber || 0), 0);
         return { ind, total };
       })
@@ -125,62 +126,66 @@ export default function SummaryPage() {
 
   // Filter indikator berdasarkan search + yearFilter (hanya indikator yg punya data sesuai filter)
   const filteredIndicators = React.useMemo(() => {
-  return indicators.filter((ind) => {
-    const matchSearch = ind.toLowerCase().includes(search.trim().toLowerCase());
-    if (!matchSearch) return false;
-    if (!yearFilter) return true;
-    return typedData.some((r) => r.Indicator === ind && r.SortKey?.startsWith(yearFilter));
-  });
-}, [indicators, typedData, search, yearFilter]);
+    return indicators.filter((ind) => {
+      const matchSearch = ind.toLowerCase().includes(search.trim().toLowerCase());
+      if (!matchSearch) return false;
+      if (!yearFilter) return true;
+      return typedData.some((r) => r.Indicator === ind && r.SortKey?.startsWith(yearFilter));
+    });
+  }, [indicators, typedData, search, yearFilter]);
 
-// ⬇⬇ Tambahkan fungsi ini
-const formatNumber = (v: any) => {
-  if (v === null || v === undefined || v === "" || isNaN(Number(v))) return "-";
+  // ⬇⬇ Tambahkan fungsi ini
+  const formatNumber = (v: any) => {
+    if (v === null || v === undefined || v === "" || isNaN(Number(v))) return "-";
 
-  const num = Number(v);
-  const abs = Math.abs(num);
+    const num = Number(v);
+    const abs = Math.abs(num);
 
-  if (abs >= 1_000_000_000)
-    return (num / 1_000_000_000).toFixed(2).replace(/\.00$/, "") + "M";
+    if (abs >= 1_000_000_000)
+      return (num / 1_000_000_000).toFixed(2).replace(/\.00$/, "") + " Mil";
 
-  if (abs >= 1_000_000)
-    return (num / 1_000_000).toFixed(2).replace(/\.00$/, "") + "J";
+    if (abs >= 1_000_000)
+      return (num / 1_000_000).toFixed(2).replace(/\.00$/, "") + " Jt";
 
-  if (abs >= 1_000)
-    return (num / 1_000).toFixed(1).replace(/\.0$/, "") + "K";
+    if (abs >= 1_000)
+      return (num / 1_000).toFixed(1).replace(/\.0$/, "") + " Rb";
 
-  return num.toLocaleString("id-ID");
-};
+    return num.toLocaleString("id-ID");
+  };
 
 
-// ⬇⬇⬇ Tambahan 1 (TARUH DI SINI)
-const noData = !data || data.length === 0;
+  // ⬇⬇⬇ Tambahan 1 (TARUH DI SINI)
+  const noData = !data || data.length === 0;
 
-// ⬇⬇⬇ Tambahan 2 (Sebelum return utama)
-if (noData) {
+  // ⬇⬇⬇ Tambahan 2 (Sebelum return utama)
+  if (noData) {
+    return (
+      <main className="min-h-screen flex flex-col items-center justify-center text-gray-600 bg-gray-50">
+        <h2 className="text-2xl font-semibold mb-2">Belum ada data yang diunggah</h2>
+        <p className="text-sm">Silakan kembali ke halaman utama untuk mengunggah file Excel.</p>
+      </main>
+    );
+  }
+
+
+  const selectedYearLabel = yearFilter ? `(${yearFilter})` : "";
+
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center text-gray-600 bg-gray-50">
-      <h2 className="text-2xl font-semibold mb-2">Belum ada data yang diunggah</h2>
-      <p className="text-sm">Silakan kembali ke halaman utama untuk mengunggah file Excel.</p>
-    </main>
-  );
-}
-
-
-const selectedYearLabel = yearFilter ? `(${yearFilter})` : "";
-
-return (
-  <main className="min-h-screen bg-slate-50 p-10">
-
-      {/* Header */}
-      <div
-        className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8
-  border-l-4 border-l-blue-500 border bg-white rounded-xl p-6 shadow-sm"
-      >
+    <main className="min-h-screen bg-slate-50 p-10 flex flex-col items-center">
+      <div className="w-full max-w-7xl">
+        <Link href="/" className="text-blue-600 no-underline text-2xl mb-8 block self-start">
+          &larr;
+        </Link>
+        
+        {/* Header */}
+        <div
+          className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8
+    border-l-4 border-l-blue-500 border bg-white rounded-xl p-6 shadow-sm"
+        >
         <div>
           <h1 className="text-4xl font-extrabold text-slate-800">
-  Executive Summary <span className="text-blue-600">{selectedYearLabel}</span>
-</h1>
+            Executive Summary <span className="text-blue-600">{selectedYearLabel}</span>
+          </h1>
           <p className="text-sm text-slate-500 mt-1">
             Ringkasan performa realisasi dan target RKAP berdasarkan indikator.
           </p>
@@ -239,62 +244,58 @@ return (
 
           {/* Filter tahun */}
           <div>
-  <label className="text-xs text-slate-500">Tahun</label>
-  <div className="mt-2 flex flex-wrap gap-2">
-    <button
-      onClick={() => setYearFilter("")}
-      className={`px-3 py-1.5 rounded-xl text-sm border ${
-        yearFilter === "" 
-          ? "bg-blue-600 text-white border-blue-600" 
-          : "bg-white text-slate-700 border-slate-300"
-      }`}
-    >
-      Semua
-    </button>
+            <label className="text-xs text-slate-500">Tahun</label>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <button
+                onClick={() => setYearFilter("")}
+                className={`px-3 py-1.5 rounded-xl text-sm border ${yearFilter === ""
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "bg-white text-slate-700 border-slate-300"
+                  }`}
+              >
+                Semua
+              </button>
 
-    {years.map((yr) => (
-      <button
-        key={yr}
-        onClick={() => setYearFilter(yr)}
-        className={`px-3 py-1.5 rounded-xl text-sm border ${
-          yearFilter === yr
-            ? "bg-blue-600 text-white border-blue-600"
-            : "bg-white text-slate-700 border-slate-300"
-        }`}
-      >
-        {yr}
-      </button>
-    ))}
-  </div>
-</div>
+              {years.map((yr) => (
+                <button
+                  key={yr}
+                  onClick={() => setYearFilter(yr)}
+                  className={`px-3 py-1.5 rounded-xl text-sm border ${yearFilter === yr
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "bg-white text-slate-700 border-slate-300"
+                    }`}
+                >
+                  {yr}
+                </button>
+              ))}
+            </div>
+          </div>
 
           {/* Jenis grafik */}
           <div>
-  <label className="text-xs text-slate-500">Jenis Grafik</label>
-  <div className="mt-2 flex gap-2">
-    <button
-      onClick={() => setChartType("line")}
-      className={`px-3 py-1.5 rounded-xl text-sm border ${
-        chartType === "line"
-          ? "bg-blue-600 text-white border-blue-600"
-          : "bg-white text-slate-700 border-slate-300"
-      }`}
-    >
-      Line
-    </button>
+            <label className="text-xs text-slate-500">Jenis Grafik</label>
+            <div className="mt-2 flex gap-2">
+              <button
+                onClick={() => setChartType("line")}
+                className={`px-3 py-1.5 rounded-xl text-sm border ${chartType === "line"
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "bg-white text-slate-700 border-slate-300"
+                  }`}
+              >
+                Line
+              </button>
 
-    <button
-      onClick={() => setChartType("bar")}
-      className={`px-3 py-1.5 rounded-xl text-sm border ${
-        chartType === "bar"
-          ? "bg-blue-600 text-white border-blue-600"
-          : "bg-white text-slate-700 border-slate-300"
-      }`}
-    >
-      Bar
-    </button>
-  </div>
-</div>
+              <button
+                onClick={() => setChartType("bar")}
+                className={`px-3 py-1.5 rounded-xl text-sm border ${chartType === "bar"
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "bg-white text-slate-700 border-slate-300"
+                  }`}
+              >
+                Bar
+              </button>
+            </div>
+          </div>
 
           {/* Placeholder: bisa diisi kontrol tambahan */}
           <div className="flex items-end">
@@ -326,10 +327,10 @@ return (
         {filteredIndicators.map((indicator) => {
           // filter rows by indicator and selected year (if any)
           const rows = typedData.filter((r) => {
-  const matchInd = r.Indicator === indicator;
-  const matchYear = !yearFilter || r.SortKey?.startsWith(yearFilter);
-  return matchInd && matchYear;
-});
+            const matchInd = r.Indicator === indicator;
+            const matchYear = !yearFilter || r.SortKey?.startsWith(yearFilter);
+            return matchInd && matchYear;
+          });
           if (rows.length === 0) return null;
 
           const totalActual = rows.reduce((s, r) => s + (r.ActualNumber || 0), 0);
@@ -372,111 +373,116 @@ return (
                   <div className="min-w-[640px] h-[260px] mt-4">
                     <ResponsiveContainer width="100%" height="100%">
                       {chartType === "line" ? (
-                        <LineChart data={rows} margin={{ top: 8, right: 24, left: 0, bottom: 4 }}>
+                        <LineChart data={rows} margin={{ top: 5, right: 24, left: 10, bottom: 20 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e6eef8" />
-                           <XAxis
-        dataKey="Period"
-        label={{
-          value: "Periode (Bulan)",
-          position: "insideBottom",
-          offset: -35
-        }}
-      />
+                          <XAxis
+                            dataKey="Period"
+                            label={{
+                              value: "Periode (Bulan)",
+                              position: "bottom",
+                              offset: 0
+                            }}
+                          />
 
-      <YAxis
-      width={70}
-      tickFormatter={(v) => formatNumber(v)}
-        label={{
-          value: "Nilai (Actual / RKAP)",
-          angle: -90,
-          position: "insideLeft",
-          style: { textAnchor: "middle" }
-        }}
-      />
+
+                          <YAxis
+                            width={70}
+                            tickFormatter={(v) => formatNumber(v)}
+                            label={{
+                              value: "Nilai (Actual / RKAP)",
+                              angle: -90,
+                              position: "insideLeft",
+                              style: { textAnchor: "middle" }
+                            }}
+                          />
 
 
                           {/* Tooltip modern */}
                           <Tooltip
-  contentStyle={{
-    background: "rgba(255, 255, 255, 0.96)",
-    backdropFilter: "blur(6px)",
-    borderRadius: 12,
-    border: "1px solid rgba(226,232,240,0.8)",
-    boxShadow: "0 6px 20px rgba(15, 23, 42, 0.12)",
-    padding: "8px 10px",
-  }}
-  labelStyle={{ fontSize: 12, fontWeight: 600, color: "#334155" }}
-  itemStyle={{ fontSize: 12, color: "#1e293b" }}
-  formatter={(value: any, name: any) => [
-    typeof value === "number" ? formatNumber(value) : value,
-    name === "ActualNumber" ? "Actual" : name === "RKAPNumber" ? "RKAP" : name,
-  ]}
-/>
+                            contentStyle={{
+                              background: "rgba(255, 255, 255, 0.96)",
+                              backdropFilter: "blur(6px)",
+                              borderRadius: 12,
+                              border: "1px solid rgba(226,232,240,0.8)",
+                              boxShadow: "0 6px 20px rgba(15, 23, 42, 0.12)",
+                              padding: "8px 10px",
+                            }}
+                            labelStyle={{ fontSize: 12, fontWeight: 600, color: "#334155" }}
+                            itemStyle={{ fontSize: 12, color: "#1e293b" }}
+                            formatter={(value: any, name: any) => [
+                              typeof value === "number" ? formatNumber(value) : value,
+                              name === "ActualNumber" ? "Actual" : name === "RKAPNumber" ? "RKAP" : name,
+                            ]}
+                          />
 
-                          <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: 12 }} />
+                          <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: 12 }} />
 
                           <Line type="monotone" dataKey="ActualNumber" name="Actual" stroke={actualColor} strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 5 }} />
                           <Line type="monotone" dataKey="RKAPNumber" name="RKAP" stroke={targetColor} strokeWidth={2} strokeDasharray="6 4" dot={{ r: 2 }} />
                         </LineChart>
                       ) : (
-                        <BarChart data={rows} margin={{ top: 8, right: 24, left: 0, bottom: 4 }}>
+                        <BarChart
+                          data={rows}
+                          margin={{ top: 5, right: 24, left: 10, bottom: 35 }}
+                        >
                           <CartesianGrid strokeDasharray="3 3" stroke="#e6eef8" />
-                           <XAxis
-        dataKey="Period"
-        label={{
-          value: "Periode (Bulan)",
-          position: "insideBottom",
-          offset: -35
-        }}
-      />
 
-      <YAxis
-      width={70}
-      tickFormatter={(v) => formatNumber(v)}
-        label={{
-          value: "Nilai (Actual / RKAP)",
-          angle: -90,
-          position: "insideLeft",
-          style: { textAnchor: "middle" }
-        }}
-      />
+                          <XAxis
+                            dataKey="Period"
+                            label={{
+                              value: "Periode (Bulan)",
+                              position: "bottom",
+                              offset: 20
+                            }}
+                          />
+
+                          <YAxis
+                            width={70}
+                            tickFormatter={(v) => formatNumber(v)}
+                            label={{
+                              value: "Nilai (Actual / RKAP)",
+                              angle: -90,
+                              position: "insideLeft",
+                              style: { textAnchor: "middle" }
+                            }}
+                          />
 
 
                           <Tooltip
-  contentStyle={{
-    background: "rgba(255, 255, 255, 0.96)",
-    backdropFilter: "blur(6px)",
-    borderRadius: 12,
-    border: "1px solid rgba(226,232,240,0.8)",
-    boxShadow: "0 6px 20px rgba(15, 23, 42, 0.12)",
-    padding: "8px 10px",
-  }}
-  labelStyle={{ fontSize: 12, fontWeight: 600, color: "#334155" }}
-  itemStyle={{ fontSize: 12, color: "#1e293b" }}
-  formatter={(value: any, name: any) => {
-    // Number formatter elegan
-    const formatNumber = (v: number) => {
-      if (Math.abs(v) >= 1_000_000_000)
-        return (v / 1_000_000_000).toFixed(2) + "M";
-      if (Math.abs(v) >= 1_000_000)
-        return (v / 1_000_000).toFixed(2) + "J";
-      if (Math.abs(v) >= 1_000)
-        return (v / 1_000).toFixed(2) + "K";
-      return v.toLocaleString();
-    };
+                            contentStyle={{
+                              background: "rgba(255, 255, 255, 0.96)",
+                              backdropFilter: "blur(6px)",
+                              borderRadius: 12,
+                              border: "1px solid rgba(226,232,240,0.8)",
+                              boxShadow: "0 6px 20px rgba(15, 23, 42, 0.12)",
+                              padding: "8px 10px",
+                            }}
+                            labelStyle={{ fontSize: 12, fontWeight: 600, color: "#334155" }}
+                            itemStyle={{ fontSize: 12, color: "#1e293b" }}
+                            formatter={(value: any, name: any) => {
+                              // Number formatter elegan
+                              const formatNumber = (v: number) => {
+                                if (Math.abs(v) >= 1_000_000_000)
+                                  return (v / 1_000_000_000).toFixed(2) + " Ml";
+                                if (Math.abs(v) >= 1_000_000)
+                                  return (v / 1_000_000).toFixed(2) + " Jt";
+                                if (Math.abs(v) >= 1_000)
+                                  return (v / 1_000).toFixed(2) + " Rb";
+                                return v.toLocaleString();
+                              };
 
-    const label =
-      name === "ActualNumber"
-        ? "Actual"
-        : name === "RKAPNumber"
-        ? "RKAP"
-        : name;
+                              const label =
+                                name === "ActualNumber"
+                                  ? "Actual"
+                                  : name === "RKAPNumber"
+                                    ? "RKAP"
+                                    : name;
 
-    return [typeof value === "number" ? formatNumber(value) : value, label];
-  }}
-/>
+                              return [typeof value === "number" ? formatNumber(value) : value, label];
+                            }}
+                          />
 
-                          <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: 12 }} />
+                          <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: 12 }} />
 
                           <Bar dataKey="ActualNumber" name="Actual" fill={actualColor} barSize={12} />
                           <Bar dataKey="RKAPNumber" name="RKAP" fill={targetColor} barSize={8} />
@@ -489,6 +495,7 @@ return (
             </Card>
           );
         })}
+      </div>
       </div>
     </main>
   );

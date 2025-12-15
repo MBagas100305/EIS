@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import React from "react";
 import { useData } from "@/context/dataContext";
 import {
@@ -57,7 +58,10 @@ export default function FinancePage(): React.ReactElement {
 
   if (!data || data.length === 0) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center text-gray-600">
+      <div className="min-h-screen flex flex-col items-center justify-center text-gray-600 bg-gray-50">
+        <Link href="/" className="text-blue-600 no-underline text-2xl mb-8 block">
+          &larr;
+        </Link>
         <h2 className="text-xl font-semibold mb-2">
           Belum ada data yang diunggah
         </h2>
@@ -217,7 +221,11 @@ export default function FinancePage(): React.ReactElement {
   const selectedYearLabel = yearFilter ? `(${yearFilter})` : "";
 
   return (
-    <main className="min-h-screen bg-slate-50 p-10">
+    <main className="min-h-screen bg-slate-50 p-10 flex flex-col items-center">
+      <div className="w-full max-w-7xl">
+        <Link href="/" className="text-blue-600 no-underline text-2xl mb-8 block self-start">
+          &larr;
+        </Link>
       {/* Header + KPI */}
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-8 border-l-4 border-l-blue-500 border bg-white rounded-xl p-6 shadow-sm">
         {/* Judul */}
@@ -280,8 +288,8 @@ export default function FinancePage(): React.ReactElement {
               <button
                 onClick={() => setYearFilter("")}
                 className={`px-3 py-1.5 rounded-xl text-sm border ${yearFilter === ""
-                    ? "bg-blue-600 text-white border-blue-600"
-                    : "bg-white text-slate-700 border-slate-300"
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "bg-white text-slate-700 border-slate-300"
                   }`}
               >
                 Semua
@@ -291,8 +299,8 @@ export default function FinancePage(): React.ReactElement {
                   key={yr}
                   onClick={() => setYearFilter(yr)}
                   className={`px-3 py-1.5 rounded-xl text-sm border ${yearFilter === yr
-                      ? "bg-blue-600 text-white border-blue-600"
-                      : "bg-white text-slate-700 border-slate-300"
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "bg-white text-slate-700 border-slate-300"
                     }`}
                 >
                   {yr}
@@ -307,8 +315,8 @@ export default function FinancePage(): React.ReactElement {
               <button
                 onClick={() => setChartType("line")}
                 className={`px-3 py-1.5 rounded-xl text-sm border ${chartType === "line"
-                    ? "bg-blue-600 text-white border-blue-600"
-                    : "bg-white text-slate-700 border-slate-300"
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "bg-white text-slate-700 border-slate-300"
                   }`}
               >
                 Line
@@ -316,8 +324,8 @@ export default function FinancePage(): React.ReactElement {
               <button
                 onClick={() => setChartType("bar")}
                 className={`px-3 py-1.5 rounded-xl text-sm border ${chartType === "bar"
-                    ? "bg-blue-600 text-white border-blue-600"
-                    : "bg-white text-slate-700 border-slate-300"
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "bg-white text-slate-700 border-slate-300"
                   }`}
               >
                 Bar
@@ -376,70 +384,135 @@ export default function FinancePage(): React.ReactElement {
                   <div className="min-w-[640px] h-[260px] mt-4">
                     <ResponsiveContainer width="100%" height="100%">
                       {chartType === "line" ? (
-                        <LineChart data={chartData} margin={{ top: 8, right: 24, left: 0, bottom: 4 }}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#e6eef8" />
-                          <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#475569" }} />
-                          <YAxis tick={{ fontSize: 12, fill: "#475569" }} />
-                          <Tooltip
-                            formatter={(value, name) => [
-                              value,
-                              name === "currentYear" ? "Realisasi" : "RKAP (Target)",
-                            ]}
-                          />
-                          <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: 12 }} />
-                          <Line
-                            type="monotone"
-                            dataKey="currentYear"
-                            name="Realisasi"
-                            stroke={isBelowTarget ? "#dc2626" : "#16a34a"} // merah/hijau
-                            strokeWidth={3}
-                            dot={{ r: 3 }}
-                          />
-                          <Line
-                            type="monotone"
-                            dataKey="lastYear"
-                            name="RKAP (Target)"
-                            stroke="#0ea5e9"
-                            strokeWidth={2}
-                            strokeDasharray="5 5"
-                            dot={{ r: 2 }}
-                          />
-                        </LineChart>
-                      ) : (
-                        <BarChart data={chartData} margin={{ top: 8, right: 24, left: 0, bottom: 4 }}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#e6eef8" />
-                          <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#475569" }} />
-                          <YAxis tick={{ fontSize: 12, fill: "#475569" }} />
-                          <Tooltip
-                            formatter={(value, name) => [
-                              value,
-                              name === "currentYear" ? "Realisasi" : "RKAP (Target)",
-                            ]}
-                          />
-                          <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: 12 }} />
-                          <Bar
-                            dataKey="currentYear"
-                            name="Realisasi"
-                            fill={isBelowTarget ? "#dc2626" : "#16a34a"} // merah/hijau
-                            barSize={12}
-                          />
-                          <Bar
-                            dataKey="lastYear"
-                            name="RKAP (Target)"
-                            fill="#0ea5e9"
-                            barSize={8}
-                          />
+                       <LineChart data={chartData} margin={{ top: 5, right: 24, left: 10, bottom: 20 }}>
+  <CartesianGrid strokeDasharray="3 3" stroke="#e6eef8" />
 
-                        </BarChart>
+  <XAxis
+    dataKey="month"
+    label={{
+      value: "Periode (Bulan)",
+      position: "bottom",
+      offset: 0,
+    }}
+    tick={{ fontSize: 12, fill: "#475569" }}
+  />
+
+  <YAxis
+    width={70}
+    tick={{ fontSize: 12, fill: "#475569" }}
+    label={{
+      value: "Nilai (Actual / RKAP)",
+      angle: -90,
+      position: "insideLeft",
+      style: { textAnchor: "middle" }
+    }}
+  />
+
+  <Tooltip
+    contentStyle={{
+      background: "rgba(255, 255, 255, 0.96)",
+      backdropFilter: "blur(6px)",
+      borderRadius: 12,
+      border: "1px solid rgba(226,232,240,0.8)",
+      boxShadow: "0 6px 20px rgba(15, 23, 42, 0.12)",
+      padding: "8px 10px",
+    }}
+    labelStyle={{ fontSize: 12, fontWeight: 600, color: "#334155" }}
+    itemStyle={{ fontSize: 12, color: "#1e293b" }}
+    formatter={(value, name) => [
+      value,
+      name === "currentYear" ? "Realisasi" : "RKAP (Target)",
+    ]}
+  />
+
+  <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: 12 }} />
+
+  <Line
+    type="monotone"
+    dataKey="currentYear"
+    name="Realisasi"
+    stroke={isBelowTarget ? "#dc2626" : "#16a34a"}
+    strokeWidth={3}
+    dot={{ r: 3 }}
+  />
+
+  <Line
+    type="monotone"
+    dataKey="lastYear"
+    name="RKAP (Target)"
+    stroke="#0ea5e9"
+    strokeWidth={2}
+    strokeDasharray="5 5"
+    dot={{ r: 2 }}
+  />
+</LineChart>
+                      ) : (
+                       <BarChart data={chartData} margin={{ top: 5, right: 24, left: 10, bottom: 35 }}>
+  <CartesianGrid strokeDasharray="3 3" stroke="#e6eef8" />
+
+  <XAxis
+    dataKey="month"
+    label={{
+      value: "Periode (Bulan)",
+      position: "bottom",
+      offset: 20
+    }}
+    tick={{ fontSize: 12, fill: "#475569" }}
+  />
+
+  <YAxis
+    width={70}
+    tick={{ fontSize: 12, fill: "#475569" }}
+    label={{
+      value: "Nilai (Actual / RKAP)",
+      angle: -90,
+      position: "insideLeft",
+      style: { textAnchor: "middle" }
+    }}
+  />
+
+  <Tooltip
+    contentStyle={{
+      background: "rgba(255, 255, 255, 0.96)",
+      backdropFilter: "blur(6px)",
+      borderRadius: 12,
+      border: "1px solid rgba(226,232,240,0.8)",
+      boxShadow: "0 6px 20px rgba(15, 23, 42, 0.12)",
+      padding: "8px 10px",
+    }}
+    labelStyle={{ fontSize: 12, fontWeight: 600, color: "#334155" }}
+    itemStyle={{ fontSize: 12, color: "#1e293b" }}
+    formatter={(value, name) => [
+      value,
+      name === "currentYear" ? "Realisasi" : "RKAP (Target)",
+    ]}
+  />
+
+  <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: 12 }} />
+
+  <Bar
+    dataKey="currentYear"
+    name="Realisasi"
+    fill={isBelowTarget ? "#dc2626" : "#16a34a"}
+    barSize={12}
+  />
+
+  <Bar
+    dataKey="lastYear"
+    name="RKAP (Target)"
+    fill="#0ea5e9"
+    barSize={8}
+  />
+</BarChart>
                       )}
                     </ResponsiveContainer>
                   </div>
-                  <div className="text-center text-xs text-slate-500 mt-2">Sumbu X: Periode • Sumbu Y: Nilai</div>
                 </div>
               </CardContent>
             </Card>
           );
         })}
+      </div>
       </div>
     </main>
   );
